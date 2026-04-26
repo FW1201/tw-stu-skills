@@ -80,25 +80,51 @@ npx skills update -a claude-code
 
 ### Codex CLI
 
-```bash
-npx skills add FW1201/tw-stu-skills --all -a codex
+Codex 原生支援 MCP，透過 `~/.codex/config.toml` 設定 Connectors。
+
+**Skills 安裝路徑**：
+```
+<your-project>/.agents/skills/<skill-name>/SKILL.md
 ```
 
-> ⚠️ **Codex 限制**：
-> - `tw-stu-concept-viz` 的 HTML Artifact 互動視覺化**無法預覽**（僅輸出 HTML 程式碼）
-> - MCP Connectors（Google Calendar、Notion、Canva）**不可用**，備考排程需手動匯入
-> - `tw-stu-study-planner` 的 Google Calendar 自動同步功能不適用
-
-### Antigravity
-
 ```bash
-npx skills add FW1201/tw-stu-skills --all -a antigravity
+git clone https://github.com/FW1201/tw-stu-skills.git
+mkdir -p <your-project>/.agents/skills
+cp -r tw-stu-skills/tw-stu-*/ <your-project>/.agents/skills/
 ```
 
-> ⚠️ **Antigravity 限制**：
-> - MCP Connectors 支援程度依個人環境設定而定
-> - HTML Artifact 互動預覽需確認瀏覽器整合已啟用
-> - `WebSearch`（用於生涯探索、科系資訊查詢）依連線狀態而定
+**MCP 設定**（`~/.codex/config.toml`）：
+```toml
+[mcp_servers.notion]
+command = "npx"
+args = ["-y", "@notionhq/notion-mcp-server"]
+env = { NOTION_API_KEY = "${NOTION_API_KEY}" }
+
+[mcp_servers.google-calendar]
+url = "https://gcal.mcp.claude.com/mcp"
+headers = { Authorization = "Bearer ${GCAL_TOKEN}" }
+```
+
+> 詳細設定請參閱 [docs/non-claude-setup.md](docs/non-claude-setup.md)
+
+### Antigravity（Google AI IDE）
+
+Antigravity 完整支援 MCP，內建 MCP Server Hub（1,500+ Connectors）。
+
+**Skills 安裝路徑**：
+```
+~/.gemini/antigravity/skills/<skill-name>/SKILL.md   ← 全域層
+<project>/.agent/skills/<skill-name>/SKILL.md         ← 專案層（注意：單數 .agent）
+```
+
+```bash
+mkdir -p ~/.gemini/antigravity/skills
+cp -r tw-stu-skills/tw-stu-*/ ~/.gemini/antigravity/skills/
+```
+
+**MCP 設定**：透過 MCP Server Hub 介面直接啟用 Notion、Google Calendar Connector。
+
+> 詳細設定請參閱 [docs/non-claude-setup.md](docs/non-claude-setup.md)
 
 ---
 
