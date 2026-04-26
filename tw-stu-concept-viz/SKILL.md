@@ -9,8 +9,7 @@ description: >
   分類：K-12 學習（tw-stu-*）
 version: 1.0.0
 author: 奇老師・數位敘事力社群
-allowed-tools: "Bash, Read, Write, WebSearch"
-disable-model-invocation: true
+allowed-tools: "Read, Write"
 ---
 
 # 抽象概念互動視覺化問答 v1.0
@@ -94,15 +93,23 @@ disable-model-invocation: true
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>[概念名稱] 視覺化</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
     /* Neon Circuit 設計系統相容樣式 */
     :root {
-      --bg: #0D1117;
-      --primary: #00D4FF;
-      --secondary: #7B2FFF;
-      --accent: #FF6B35;
-      --text: #E6EDF3;
-      --success: #00FF88;
+      --neon-circuit-bg: #0D1117;
+      --neon-circuit-primary: #00D4FF;
+      --neon-circuit-secondary: #7B2FFF;
+      --neon-circuit-accent: #FF6B35;
+      --neon-circuit-text: #E6EDF3;
+      --neon-circuit-success: #00FF88;
+      /* 向下相容別名 */
+      --bg: var(--neon-circuit-bg);
+      --primary: var(--neon-circuit-primary);
+      --secondary: var(--neon-circuit-secondary);
+      --accent: var(--neon-circuit-accent);
+      --text: var(--neon-circuit-text);
+      --success: var(--neon-circuit-success);
     }
     body { background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; }
     /* 懸停效果、點擊反饋、動畫 */
