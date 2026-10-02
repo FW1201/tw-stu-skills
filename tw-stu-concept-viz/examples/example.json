@@ -1,0 +1,39 @@
+{
+  "title": "一次函數（示例）",
+  "nodes": [
+    {
+      "id": "x",
+      "label": "自變數 x",
+      "description": "輸入數值"
+    },
+    {
+      "id": "y",
+      "label": "函數值 y",
+      "description": "y=2x+1"
+    }
+  ],
+  "edges": [
+    {
+      "from": "x",
+      "to": "y",
+      "label": "函數映射"
+    }
+  ],
+  "linear": {
+    "a": 2,
+    "b": 1,
+    "min": 0,
+    "max": 10,
+    "step": 1
+  },
+  "questions": [
+    {
+      "prompt": "x=2時y等於多少？",
+      "answer": "5，因為2×2+1=5。"
+    },
+    {
+      "prompt": "改成y=3x+1，x=2時呢？",
+      "answer": "7，係數改變而非只記舊答案。"
+    }
+  ]
+}

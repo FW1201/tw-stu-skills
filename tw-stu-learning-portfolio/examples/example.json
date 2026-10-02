@@ -1,0 +1,21 @@
+{
+  "mode": "content",
+  "type": "diverse",
+  "title": "示例多元表現",
+  "sections": [
+    {
+      "heading": "學生原文（示例）",
+      "text": "我整理了一份草稿，仍需以真實內容替換。",
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "locator": "示例作品第1頁",
+      "excerpt": "示例摘錄"
+    }
+  ]
+}

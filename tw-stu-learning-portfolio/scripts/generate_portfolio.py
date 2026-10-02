@@ -1,105 +1,59 @@
 #!/usr/bin/env python3
-"""學習歷程檔案輔助生成腳本"""
-import argparse, sys
-sys.path.insert(0, '.')
-from tw_edu_doc_utils import *
+"""Real student content, or an explicitly requested blank framework."""
+import argparse,json,hashlib,os,tempfile
+from pathlib import Path
+from docx import Document
+from docx.shared import Pt,Cm
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+TYPES={'course_result':['課程與目標','學習過程','成果與證據','修訂與反思'],'diverse':['活動與角色','實際投入','作品與證據','反思與下一步'],'autobiography':['自我介紹','真實經歷','學習與探索','選擇與方向']}
 
-def add_portfolio_framework(doc, grade, port_type):
-    if port_type == 'course_result':
-        section_heading(doc, '課程學習成果說明框架')
-        p = doc.add_paragraph()
-        r = p.add_run('⚠️ 本框架僅供參考，請學生以自己的語言真實呈現學習歷程')
-        r.font.size = Pt(10); r.font.color.rgb = RED_SOFT; r.font.name = '標楷體'
-        set_east_asia_font(r)
-        doc.add_paragraph()
+def validate(d):
+    if d['type'] not in TYPES:raise ValueError('unknown portfolio type')
+    if d.get('mode') not in ['content','framework','example']:raise ValueError('explicit mode required')
+    if not isinstance(d['title'],str) or not d['title'].strip():raise ValueError('title required')
+    if not d['sections']:raise ValueError('nonempty sections required')
+    for s in d['sections']:
+        if not isinstance(s['heading'],str) or not s['heading'].strip() or not isinstance(s['text'],str):raise ValueError('section heading/text required')
+        if d['mode']=='content' and not s['text'].strip():raise ValueError('content sections cannot be blank')
+    ids=[e['id'] for e in d.get('evidence',[])]
+    if len(ids)!=len(set(ids)):raise ValueError('duplicate evidence ids')
+    for s in d['sections']:
+        if not set(s.get('evidence_ids',[])).issubset(ids):raise ValueError('unknown evidence reference')
+    for e in d.get('evidence',[]):
+        if not isinstance(e.get('locator'),str) or not e['locator'].strip():raise ValueError('evidence locator required')
 
-        sections = [
-            ('一、課程簡介（約100字）',
-             '說明這門課的學習內容與目標。\n'
-             '範例：「在___課中，我學習了___，透過___活動，深入了解___。」\n'
-             '請在此撰寫：\n' + '＿'*80),
-            ('二、學習過程描述（約200字）',
-             '具體描述你在這門課做了什麼、遇到什麼挑戰、如何克服。\n'
-             '請在此撰寫：\n' + '＿'*80),
-            ('三、學習成果說明（約200字）',
-             '說明你的具體產出（作品、報告、實驗等）及其學習意義。\n'
-             '可以附上作品截圖或重點摘錄。\n'
-             '請在此撰寫：\n' + '＿'*80),
-            ('四、能力成長與反思（約200字）',
-             '反思這門課對你的影響：學到了什麼能力？對未來有何幫助？\n'
-             '請在此撰寫：\n' + '＿'*80),
-            ('五、與申請科系的連結（約100字）',
-             '說明這門課與你未來志向的關聯（非必要，依情況而定）。\n'
-             '請在此撰寫：\n' + '＿'*80),
-        ]
-        for title, desc in sections:
-            section_heading(doc, title, level=2)
-            tbl = doc.add_table(rows=1, cols=1)
-            tbl.style = 'Table Grid'
-            tbl.columns[0].width = Cm(17)
-            data_cell(tbl.rows[0].cells[0], desc)
-            tbl.rows[0].height = Cm(4)
-            doc.add_paragraph()
-
-    elif port_type == 'autobiography':
-        section_heading(doc, '自傳撰寫框架')
-        p = doc.add_paragraph()
-        r = p.add_run('自傳字數建議：800-1200字｜語氣：第一人稱，真誠自然')
-        r.font.size = Pt(10); r.font.color.rgb = GOLD; r.font.name = '標楷體'
-        set_east_asia_font(r)
-        doc.add_paragraph()
-
-        structure = [
-            ('段落一：我是誰（開場）', '用一個故事或場景引出你是誰。避免從「我叫XXX，就讀OOO」開始。'),
-            ('段落二：形塑我的經歷', '哪些重要經歷（家庭/事件/人物）影響了你現在的價值觀？'),
-            ('段落三：高中的學習與探索', '你在高中最投入的是什麼？有哪些具體的學習成果或經歷？'),
-            ('段落四：我的特質與優勢', '你認為自己最突出的特質是什麼？用具體例子說明。'),
-            ('段落五：未來的方向與期待', '你為什麼選擇這個科系？你希望在大學做什麼？'),
-        ]
-        for title, guide in structure:
-            section_heading(doc, title, level=2)
-            p2 = doc.add_paragraph()
-            r2 = p2.add_run(f'引導提示：{guide}')
-            r2.font.size = Pt(10); r2.font.color.rgb = BLUE_MID; r2.font.name = '標楷體'
-            set_east_asia_font(r2)
-            for _ in range(4):
-                lp = doc.add_paragraph()
-                pPr = lp._p.get_or_add_pPr()
-                pBdr = OxmlElement('w:pBdr')
-                bot = OxmlElement('w:bottom')
-                bot.set(qn('w:val'), 'single'); bot.set(qn('w:sz'), '4')
-                bot.set(qn('w:color'), 'BBBBBB')
-                pBdr.append(bot); pPr.append(pBdr)
-            doc.add_paragraph()
+def generate(d,path):
+    validate(d);doc=Document();doc.sections[0].top_margin=Cm(2);doc.sections[0].bottom_margin=Cm(2)
+    style=doc.styles['Normal'];style.font.name='Microsoft JhengHei';style.font.size=Pt(11);style.element.rPr.rFonts.set(qn('w:eastAsia'),'Microsoft JhengHei')
+    doc.add_heading(d['title'],0);doc.add_paragraph({'content':'依學生提供內容排版','framework':'空白引導框架，非學生已完成經驗','example':'範例，非正式學習紀錄'}[d['mode']])
+    if d.get('grade'):doc.add_paragraph('年段：'+d['grade'])
+    for s in d['sections']:
+        doc.add_heading(s['heading'],1);doc.add_paragraph(s['text'] if s['text'] else '請以自己的真實經歷與作品填寫。')
+        if s.get('evidence_ids'):doc.add_paragraph('證據：'+', '.join(s['evidence_ids']))
+    if d.get('evidence'):
+        doc.add_heading('證據對照',1);table=doc.add_table(rows=1,cols=3);table.style='Table Grid'
+        for cell,text in zip(table.rows[0].cells,['ID','來源／位置','原文摘錄']):cell.text=text
+        for e in d['evidence']:
+            for cell,text in zip(table.add_row().cells,[e['id'],e['locator'],e.get('excerpt','')]):cell.text=text
+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
+    fd,tmp=tempfile.mkstemp(suffix='.docx',dir=path.parent);os.close(fd)
+    try:doc.save(tmp);os.replace(tmp,path)
+    finally:
+        if os.path.exists(tmp):os.unlink(tmp)
+    return doc
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--grade',      default='高二')
-    parser.add_argument('--type',       default='course_result',
-                        choices=['course_result','diverse','autobiography'])
-    parser.add_argument('--content',    default='')
-    parser.add_argument('--target_dept',default='')
-    parser.add_argument('--output',     default='學習歷程.docx')
-    args = parser.parse_args()
-
-    type_labels = {'course_result':'課程學習成果','diverse':'多元表現','autobiography':'自傳'}
-    doc = new_doc_a4()
-    add_header_footer(doc, f'學習歷程檔案輔助｜{type_labels.get(args.type,"")}｜{args.grade}')
-    cover_page(doc, '學習歷程檔案輔助框架',
-               f'{type_labels.get(args.type,"")}｜{args.grade}',
-               {'年級': args.grade, '文件類型': type_labels.get(args.type,''),
-                '目標科系': args.target_dept or '（未指定）', '建立日期': str(date.today())})
-
-    p = doc.add_paragraph()
-    r = p.add_run('📌 重要提醒：本文件為引導框架，所有內容必須由學生本人以真實經歷填寫。\n'
-                  '禁止直接複製 AI 生成內容作為學習歷程檔案上傳，請誠實呈現個人學習歷程。')
-    r.font.size = Pt(11); r.bold = True; r.font.name = '標楷體'
-    r.font.color.rgb = RED_SOFT; set_east_asia_font(r)
-    doc.add_paragraph()
-
-    add_portfolio_framework(doc, args.grade, args.type)
-    doc.save(args.output)
-    print(f'✓ 學習歷程框架已儲存：{args.output}')
-
-if __name__ == '__main__':
-    main()
+    p=argparse.ArgumentParser();p.add_argument('--input',type=Path);p.add_argument('--content');p.add_argument('--framework',action='store_true');p.add_argument('--example',action='store_true');p.add_argument('--type',choices=TYPES,default='course_result');p.add_argument('--grade');p.add_argument('--target_dept');p.add_argument('--output',type=Path);p.add_argument('--validate-only',action='store_true');a=p.parse_args()
+    try:
+        if sum([a.input is not None,a.content is not None,a.framework,a.example])!=1:raise ValueError('choose --input, --content, --framework or --example')
+        if a.input:d=json.loads(a.input.read_text())
+        else:
+            mode='content' if a.content is not None else 'framework' if a.framework else 'example'
+            d={'mode':mode,'type':a.type,'title':'學習歷程'+('（範例）' if mode=='example' else ''),'grade':a.grade,'sections':[{'heading':'學生原文','text':a.content}] if a.content is not None else [{'heading':h,'text':'示例文字：本週完成一份草稿，仍需以真實內容替換。' if mode=='example' else ''} for h in TYPES[a.type]],'evidence':[]}
+        validate(d)
+        if a.validate_only:print('PASS portfolio content');return
+        if not a.output:raise ValueError('--output required')
+        generate(d,a.output);a.output.with_suffix('.validation.json').write_text(json.dumps({'mode':d['mode'],'type':d['type'],'sections':len(d['sections']),'evidence_count':len(d.get('evidence',[])),'input_sha256':hashlib.sha256(a.input.read_bytes()).hexdigest() if a.input else None,'checks_run':['content consumed','evidence references'],'limitations':['排版不代表學校規範或 Office 視覺已驗收。']},ensure_ascii=False,indent=2));print(a.output)
+    except (ValueError,KeyError,TypeError,OSError) as e:p.exit(2,str(e)+'\n')
+if __name__=='__main__':main()

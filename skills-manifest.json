@@ -1,0 +1,202 @@
+{
+  "version": "2.0.0",
+  "schema_version": 1,
+  "supported_hosts": [
+    "Codex",
+    "Claude Code"
+  ],
+  "skills": [
+    {
+      "name": "tw-stu-ai-literacy",
+      "version": "2.0.0",
+      "title": "AI 學習素養",
+      "purpose": "依任務與教師規則練習 AI 提問、輸出查覈、揭露與學習責任。",
+      "modes": [],
+      "entrypoints": [],
+      "required_resources": [
+        "references/common/workflow.md"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-career-explore",
+      "version": "2.0.0",
+      "title": "生涯探索",
+      "purpose": "用興趣反思、活動經驗與當期官方招生資訊探索方向；自製題組不作標準化診斷。",
+      "modes": [],
+      "entrypoints": [],
+      "required_resources": [
+        "references/common/workflow.md"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-concept-viz",
+      "version": "2.0.0",
+      "title": "互動概念圖解",
+      "purpose": "用可離線 HTML 圖解學科概念，提供鍵盤操作、文字替代與理解／遷移問題。",
+      "modes": [],
+      "entrypoints": [
+        "scripts/generate_concept.py"
+      ],
+      "required_resources": [
+        "references/common/workflow.md",
+        "references/input-guide.md",
+        "examples/example.json"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-exam-prep",
+      "version": "2.0.0",
+      "title": "備考與錯題輔導",
+      "purpose": "依真實題目、錯因與可用時間安排備考，區分題目、答案、解析與年度資訊。",
+      "modes": [],
+      "entrypoints": [],
+      "required_resources": [
+        "references/common/workflow.md"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-learning-portfolio",
+      "version": "3.0.0",
+      "title": "真實學習歷程",
+      "purpose": "組織學生既有作品、經驗與反思，產出內容驅動且可編輯的課程、多元表現或自傳。",
+      "modes": [],
+      "entrypoints": [
+        "scripts/generate_portfolio.py"
+      ],
+      "required_resources": [
+        "references/common/workflow.md",
+        "references/input-guide.md",
+        "examples/example.json"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-socratic",
+      "version": "2.0.0",
+      "title": "可調整問答輔導",
+      "purpose": "依學生嘗試選擇提問、提示、示範或講解，再以獨立遷移檢查理解。",
+      "modes": [],
+      "entrypoints": [],
+      "required_resources": [
+        "references/common/workflow.md"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-study-planner",
+      "version": "2.0.0",
+      "title": "可重排學習計畫",
+      "purpose": "依可用時段、任務與學習證據安排可重排計畫，輸出本機 Markdown／ICS。",
+      "modes": [],
+      "entrypoints": [
+        "scripts/plan.py"
+      ],
+      "required_resources": [
+        "references/common/workflow.md",
+        "references/input-guide.md",
+        "examples/example.json"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-synchronizer",
+      "version": "2.0.0",
+      "title": "學生學習偏好",
+      "purpose": "漸進式建立工作區學生偏好，讓學習技能按需讀取；不執行版本同步。",
+      "modes": [],
+      "entrypoints": [],
+      "required_resources": [
+        "references/common/workflow.md"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-vocab-builder",
+      "version": "2.0.0",
+      "title": "詞彙與閱讀輔導",
+      "purpose": "依原文語境辨識字義、典故與作者，用回憶與陌生文本練習檢查遷移。",
+      "modes": [],
+      "entrypoints": [],
+      "required_resources": [
+        "references/common/workflow.md"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    },
+    {
+      "name": "tw-stu-writing-coach",
+      "version": "2.0.0",
+      "title": "學生寫作教練",
+      "purpose": "根據學生原稿與表現調整寫作鷹架，定位回饋並保留學生聲音與修訂。",
+      "modes": [],
+      "entrypoints": [],
+      "required_resources": [
+        "references/common/workflow.md"
+      ],
+      "output_formats": [
+        "markdown"
+      ],
+      "supported_hosts": [
+        "Codex",
+        "Claude Code"
+      ]
+    }
+  ]
+}
