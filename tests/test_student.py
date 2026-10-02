@@ -33,6 +33,6 @@ def test_ics_utf8_folding():
  f=module('study-planner','plan.py').fold;s=f('SUMMARY:'+'中文'*60);assert all(len(line.encode())<=75 for line in s.split('\r\n'));assert s.replace('\r\n ','')=='SUMMARY:'+'中文'*60
 
 def test_concept_input_escaping_and_model():
- f=module('concept-viz','generate_concept.py').render;d={'title':'一次函數','nodes':[{'id':'x','label':'x','description':'<script>不應執行</script>'}],'edges':[],'linear':{'a':2,'b':1,'min':0,'max':5,'step':1},'questions':[{'prompt':'x=2時y?','answer':'5'}]};r=f(d);assert '&lt;script&gt;' in r and '\\u003cscript' in r and 'd.linear.a*Number(x.value)+d.linear.b' in r
+ f=module('concept-viz','generate_concept.py').render;d={'title':'一次函數','nodes':[{'id':'x','label':'x','description':'<script>不應執行</script>'}],'edges':[],'linear':{'a':2,'b':1,'min':0,'max':5,'step':1},'questions':[{'prompt':'x=2時y?','answer':'5'}]};r=f(d);assert '&lt;script&gt;' in r and '\\u003cscript' in r and 'd.linear.a*Number(x.value)+d.linear.b' in r and 'id="chart"' in r
  d['edges']=[{'from':'x','to':'missing','label':'錯'}]
  with pytest.raises(ValueError):f(d)
